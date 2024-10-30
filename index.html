@@ -8,74 +8,71 @@
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #2E2E2E;
-            color: #FFFFFF;
+            background-color: #ffffff;
+            color: #202124;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
             margin: 0;
-            padding: 20px;
-            transition: background 0.5s, color 0.5s;
         }
         h1 {
             margin-bottom: 30px;
-            text-align: center;
-            font-size: 2.5em;
-            color: #FF6F61;
-            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+            font-size: 48px;
+            font-weight: 400;
         }
         input {
-            padding: 15px;
+            padding: 20px;
             width: 100%;
-            max-width: 400px;
-            border: none;
-            border-radius: 25px;
+            max-width: 600px;
+            border: 1px solid #dcdcdc;
+            border-radius: 24px;
             font-size: 18px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-            margin-bottom: 20px;
+            transition: border 0.3s;
         }
         input:focus {
             outline: none;
-            box-shadow: 0 0 10px #FF6F61;
+            border: 1px solid #4285f4; /* Custom blue color */
+            box-shadow: 0 0 5px rgba(66, 133, 244, 0.5);
         }
         button {
-            background: #FF6F61;
-            color: #FFFFFF;
+            background: #4285f4; /* Custom blue color */
+            color: #ffffff;
             border: none;
-            padding: 10px 20px;
-            border-radius: 25px;
+            padding: 10px 30px;
+            border-radius: 24px;
             cursor: pointer;
             font-size: 18px;
+            margin-top: 20px;
             transition: background 0.3s, transform 0.2s;
         }
         button:hover {
-            background: #FF4B3A;
+            background: #357ae8; /* Darker blue */
             transform: scale(1.05);
         }
         #suggestions {
             width: 100%;
-            max-width: 400px;
+            max-width: 600px;
             margin-top: 5px;
             display: none; /* Initially hidden */
             position: absolute; /* Position for dropdown */
             z-index: 10;
         }
         #suggestions div {
-            background: #3E3E3E;
+            background: #f8f8f8;
             padding: 10px;
             border-radius: 5px;
             cursor: pointer;
             transition: background 0.3s;
         }
         #suggestions div:hover {
-            background: #555555;
+            background: #e8e8e8;
         }
         #results {
             margin-top: 20px;
             width: 100%;
-            max-width: 600px;
+            max-width: 800px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -83,28 +80,27 @@
         .result-item {
             margin-bottom: 10px;
             padding: 15px;
-            background: #3E3E3E;
+            background: #f8f8f8;
             border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             width: 100%;
-            max-width: 600px;
+            max-width: 800px;
             transition: transform 0.2s;
         }
         .result-item:hover {
-            transform: scale(1.02);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.7);
+            transform: scale(1.01);
         }
         .loading {
             display: none;
             margin-top: 20px;
             font-size: 18px;
-            color: #FF6F61;
+            color: #4285f4;
         }
         .spinner {
             width: 30px;
             height: 30px;
             border: 5px solid #f3f3f3; /* Light grey */
-            border-top: 5px solid #FF6F61; /* Color */
+            border-top: 5px solid #4285f4; /* Custom blue */
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto;
@@ -117,7 +113,7 @@
 </head>
 <body>
     <h1>Distinctive Search</h1>
-    <input type="text" id="query" placeholder="Enter your search..." oninput="fetchSuggestions()">
+    <input type="text" id="query" placeholder="Search the web..." oninput="fetchSuggestions()">
     <button onclick="performSearch()">Search</button>
     <div id="suggestions"></div>
     <div id="results"></div>
@@ -153,7 +149,7 @@
                 }
 
                 data.RelatedTopics.forEach(item => {
-                    if (item.Text && !item.FirstURL.includes('hell')) { // Filter out irrelevant results
+                    if (item.Text) {
                         const resultItem = document.createElement('div');
                         resultItem.className = 'result-item';
                         resultItem.innerHTML = `<strong>${item.Text}</strong><br><a href="${item.FirstURL}" target="_blank">${item.FirstURL}</a>`;
