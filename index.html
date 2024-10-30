@@ -8,81 +8,91 @@
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background: linear-gradient(135deg, #6a82fb, #fc5c7d);
-            color: #333;
-            padding: 20px;
-            margin: 0;
+            background-color: #2E2E2E;
+            color: #FFFFFF;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
             transition: background 0.5s, color 0.5s;
         }
         h1 {
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2.5em;
+            color: #FF6F61;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+        }
+        input {
+            padding: 15px;
+            width: 100%;
+            max-width: 400px;
+            border: none;
+            border-radius: 25px;
+            font-size: 18px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
             margin-bottom: 20px;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 10px #FF6F61;
         }
         button {
             background: #FF6F61;
-            color: white;
+            color: #FFFFFF;
             border: none;
             padding: 10px 20px;
-            border-radius: 5px;
+            border-radius: 25px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 18px;
             transition: background 0.3s, transform 0.2s;
-            margin-right: 10px;
         }
         button:hover {
             background: #FF4B3A;
             transform: scale(1.05);
         }
-        button.dark-mode {
-            background: #333;
-            color: #fff;
-        }
-        input {
-            padding: 10px;
-            width: 300px;
-            border: 2px solid #FF6F61;
-            border-radius: 5px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-        input:focus {
-            border-color: #FF4B3A;
-            outline: none;
-        }
         #suggestions {
-            width: 300px;
+            width: 100%;
+            max-width: 400px;
             margin-top: 5px;
+            display: none; /* Initially hidden */
+            position: absolute; /* Position for dropdown */
+            z-index: 10;
         }
         #suggestions div {
-            cursor: pointer;
+            background: #3E3E3E;
             padding: 10px;
-            background: #f1f1f1;
-            border: 1px solid #ddd;
             border-radius: 5px;
+            cursor: pointer;
             transition: background 0.3s;
         }
         #suggestions div:hover {
-            background: #ddd;
+            background: #555555;
         }
         #results {
             margin-top: 20px;
             width: 100%;
             max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         .result-item {
             margin-bottom: 10px;
-            padding: 10px;
-            background: white;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            padding: 15px;
+            background: #3E3E3E;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 600px;
             transition: transform 0.2s;
         }
         .result-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transform: scale(1.02);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.7);
         }
         .loading {
             display: none;
@@ -103,49 +113,17 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        /* Dark Mode Styles */
-        .dark-mode {
-            background: #121212;
-            color: #ffffff;
-        }
-        .dark-mode button {
-            background: #BB86FC;
-            color: #000;
-        }
-        .dark-mode button:hover {
-            background: #3700B3;
-        }
-        .dark-mode input {
-            border-color: #BB86FC;
-            background: #333;
-            color: #fff;
-        }
-        .dark-mode .result-item {
-            background: #1E1E1E;
-            color: #ffffff;
-        }
     </style>
 </head>
 <body>
     <h1>Distinctive Search</h1>
-
-    <button onclick="toggleTheme()">Toggle Theme</button>
     <input type="text" id="query" placeholder="Enter your search..." oninput="fetchSuggestions()">
     <button onclick="performSearch()">Search</button>
-
     <div id="suggestions"></div>
     <div id="results"></div>
     <div id="loading" class="loading">Loading... <div class="spinner"></div></div>
 
     <script>
-        let darkMode = false;
-
-        function toggleTheme() {
-            darkMode = !darkMode;
-            document.body.classList.toggle("dark-mode", darkMode);
-            document.querySelector("button").classList.toggle("dark-mode", darkMode);
-        }
-
         async function performSearch() {
             const query = document.getElementById("query").value.trim();
             if (!query) {
@@ -198,13 +176,17 @@
             const suggestionDiv = document.getElementById("suggestions");
             suggestionDiv.innerHTML = "";
 
-            if (query.length < 3) return; // Only fetch suggestions for longer queries
+            if (query.length < 3) {
+                suggestionDiv.style.display = "none"; // Hide suggestions if query is too short
+                return; 
+            }
 
             try {
                 const response = await fetch(`https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_redirect=1&no_html=1`);
                 const data = await response.json();
 
                 if (data.RelatedTopics.length > 0) {
+                    suggestionDiv.style.display = "block"; // Show suggestions
                     data.RelatedTopics.forEach(item => {
                         if (item.Text) {
                             const suggestionItem = document.createElement('div');
@@ -213,6 +195,8 @@
                             suggestionDiv.appendChild(suggestionItem);
                         }
                     });
+                } else {
+                    suggestionDiv.style.display = "none"; // Hide if no suggestions
                 }
             } catch (error) {
                 console.error("Error fetching suggestions:", error);
