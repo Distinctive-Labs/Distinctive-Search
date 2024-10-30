@@ -8,7 +8,7 @@
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+            background: linear-gradient(135deg, #6a82fb, #fc5c7d);
             color: #333;
             padding: 20px;
             margin: 0;
@@ -19,6 +19,7 @@
         }
         h1 {
             margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
         button {
             background: #FF6F61;
@@ -174,13 +175,17 @@
                 }
 
                 data.RelatedTopics.forEach(item => {
-                    if (item.Text) { // Check if there's text for the result
+                    if (item.Text && !item.FirstURL.includes('hell')) { // Filter out irrelevant results
                         const resultItem = document.createElement('div');
                         resultItem.className = 'result-item';
                         resultItem.innerHTML = `<strong>${item.Text}</strong><br><a href="${item.FirstURL}" target="_blank">${item.FirstURL}</a>`;
                         resultDiv.appendChild(resultItem);
                     }
                 });
+
+                if (resultDiv.innerHTML === "") {
+                    resultDiv.innerHTML = "No relevant results found.";
+                }
             } catch (error) {
                 loadingDiv.style.display = "none"; // Hide loading spinner
                 resultDiv.innerHTML = "Error retrieving search results.";
